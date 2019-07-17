@@ -95,7 +95,7 @@ tool = tool()
 # print(result)
 
 # # ################## txt文件读取、更改数据测试 #######################
-tool.saveBestSSIM(12343)
+# tool.saveBestSSIM(12343)
 # print(tool.getBestSSIM())
 
 # # ################## 模型参数输出设置 #######################
@@ -106,4 +106,4 @@ model_path ="../experiment/model/net_X2.pkl"
 net.load_state_dict(torch.load(model_path, map_location="cpu"))
 
 for name, parameters in net.named_parameters():
-    print(name, ":", parameters)
+   print(name, ":", parameters)

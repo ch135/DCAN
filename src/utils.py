@@ -12,6 +12,7 @@ import torch.nn as nn
 import matplotlib.pyplot as plt
 import matplotlib.image as pimage
 from math import sqrt
+import math
 
 class tool():
     def __init__(self):
@@ -82,6 +83,7 @@ class tool():
         img1 = img1.byte().cpu().data.numpy()
         img2 = img2.byte().cpu().data.numpy()
         psnrs = []
+        PIXEL_MAX = 1
         if (len(img1.shape) == 4):
             img1 = np.transpose(img1, (0, 2, 3, 1))
             img2 = np.transpose(img2, (0, 2, 3, 1))
@@ -90,7 +92,12 @@ class tool():
             img2 = np.transpose(img2, (1, 2, 0))
 
         for i in range(img1.shape[0]):
-            psnrs.append(psnr(img1[i], img2[i]))
+            mse = np.mean((img1[i] / 255. - img2[i] / 255.) ** 2)
+            if (mse < 1.0e-10):
+                psnrs.append(100)
+            else:
+                ipsnr = 20 * math.log10(PIXEL_MAX/math.sqrt(mse))
+                psnrs.append(ipsnr)
         return np.mean(psnrs)
 
     # 计算图像ssim
@@ -197,19 +204,21 @@ class tool():
 
     def getBestPsnr(self):
         psnr = 0.0
+        epoch = 0
         if not os.path.exists(self.psnr_path):
             if not os.path.exists(self.psnr_path.split("psnr")[0]):
                 os.makedirs(self.psnr_path.split("psnr")[0])
             with open(self.psnr_path, "w") as file:
-                file.write("best_psnr\t0.0")
+                file.write("Epoch:\t0\tbest_psnr\t0.0")
                 file.close()
         else:
             with open(self.psnr_path, "r") as file:
                 data = file.read()
-                psnr = data.split()[1]
+                epoch = data.split()[1]
+                psnr = data.split()[3]
                 file.close()
 
-        return np.float64(psnr)
+        return np.int(epoch), np.float64(psnr)
 
     def saveBestSSIM(self, best_ssim):
         with open(self.ssim_path, "r+") as file1:
@@ -219,10 +228,10 @@ class tool():
         with open(self.ssim_path, "r+") as file2:
             file2.write(data)
 
-    def saveBestPsnr(self, best_psnr):
+    def saveBestPsnr(self, epoch, best_psnr):
         with open(self.psnr_path, "r+") as file1:
             data = file1.read()
-            data = data.split()[0]+"\t"+str(best_psnr)
+            data = data.split()[0]+"\t"+str(epoch)+data.split()[2]+"\t"+str(best_psnr)
 
         with open(self.psnr_path, "r+") as file2:
             file2.write(data)

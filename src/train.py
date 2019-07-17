@@ -9,7 +9,7 @@ import model
 import model.DCAN_change as cmodel
 import model.RCAN as rcan
 from utils import tool
-from torch.optim import Adam, SGD, RMSprop
+from torch.optim import Adam, SGD
 from torch.autograd import Variable
 import torch.nn as nn
 import loss as loss
@@ -90,15 +90,15 @@ class train():
         elif self.optimizer == 'SGD':
             optimizer = SGD(params=model.parameters(), lr=self.lr, momentum=self.momentum,
                             weight_decay=self.weight_decay)
-        elif self.optimizer == 'RMSprop':
-            optimizer = RMSprop(params=model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        # elif self.optimizer == 'RMSprop':
+        #     optimizer = RMSprop(params=model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
 
-        best_psnr = tool.getBestPsnr()
+        epoch, best_psnr = tool.getBestPsnr()
         step = tool.getDataNumber("train") // self.batch_size  # 整个数据集训练一遍的次数
         load = Load()
         laybels = ['FinalLoss', 'SLRLoss', 'SHRLoss', 'ContentLoss']
-        for i in range(400, self.epoch):
+        for i in range(epoch, self.epoch):
             aloss, lrloss, hrloss, closs = [], [], [], []   # epoch 历史纪录
             Allloss, SLRLoss, SHRLoss, ContentLoss = [], [], [], [] # step 历史记录
             print("Epoch:{0}".format(i))
@@ -157,7 +157,7 @@ class train():
                     if (psnr > best_psnr):
                         print("result:{0}, best_psnr:{1}, save result...".format(psnr, best_psnr))
                         torch.save(model.state_dict(), self.model_path)
-                        tool.saveBestPsnr(psnr)
+                        tool.saveBestPsnr(i,psnr)
                         best_psnr = psnr
                     elif (psnr <= best_psnr):
                         print("result:{0}, best_psnr:{1}, don't save model...".format(psnr, best_psnr))
@@ -181,16 +181,16 @@ class train():
                     # tool.resultShow(datas, laybels, None)
 
 
-            if (i % 5 == 0 and i != 0):
-                with open(self.loss_path, "r") as f:
-                    f.readline()
-                    line = f.readlines()
-                    for g in range(len(line)):
-                        lines = line[g].split("\t")
-                        aloss.append(np.float64(lines[0]))
-                        lrloss.append(np.float64(lines[1]))
-                        hrloss.append(np.float64(lines[2]))
-                        closs.append(np.float64(lines[3].split("\n")[0]))
-                    f.close()
-                edatas = [aloss, lrloss, hrloss, closs]
-                tool.resultShow(edatas, laybels, "epoch{0}".format(i))
+            # if (i % 5 == 0 and i != 0):
+            #     with open(self.loss_path, "r") as f:
+            #         f.readline()
+            #         line = f.readlines()
+            #         for g in range(len(line)):
+            #             lines = line[g].split("\t")
+            #             aloss.append(np.float64(lines[0]))
+            #             lrloss.append(np.float64(lines[1]))
+            #             hrloss.append(np.float64(lines[2]))
+            #             closs.append(np.float64(lines[3].split("\n")[0]))
+            #         f.close()
+            #     edatas = [aloss, lrloss, hrloss, closs]
+            #     tool.resultShow(edatas, laybels, "epoch{0}".format(i))

@@ -1,0 +1,1 @@
+Epoch:	50	best_psnr	0.0
