@@ -103,10 +103,7 @@ import model.RCAN as rcan
 
 net = rcan.RCAN()
 model_path ="../experiment/model/net_X2.pkl"
-net.load_state_dict(torch.load(model_path, map_location="cpu"), strict=False)
+net.load_state_dict(torch.load(model_path, map_location="cpu"))
 
 for name, parameters in net.named_parameters():
    print(name, ":", parameters)
-
-total = sum([parameter.nelement() for parameter in net.parameters()])
-print("Number of params: %2fm"%(total/1e6))
