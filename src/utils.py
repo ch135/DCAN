@@ -5,7 +5,7 @@
 # @Software: PyCharm
 # @Desc: 模型工具包
 from Config import args
-import os, time
+import os,time
 import numpy as np
 from skimage.measure import compare_ssim as ssim, compare_psnr as psnr
 import torch.nn as nn
@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as pimage
 from math import sqrt
 import math
+import logging
 
 class tool():
     def __init__(self):
@@ -36,6 +37,7 @@ class tool():
         self.MSE_fn = nn.MSELoss(reduction="mean")
         self.ssim_path = args.ssim_path
         self.psnr_path = args.psnr_path
+        self.log_path = args.log_path
 
     # 获取文件路径
     def getPath(self, style="train"):
@@ -143,7 +145,7 @@ class tool():
         else:
             data_time = name
         plt.savefig("{0}/{1}.png".format(self.result_Path, data_time))
-        # plt.show()
+        plt.show()
 
     # 测试结果显示
     def testShow(self, datas):
@@ -235,3 +237,25 @@ class tool():
 
         with open(self.psnr_path, "r+") as file2:
             file2.write(data)
+
+    # 日志输出到控制台和日志文件中
+    def log(self):
+        path = self.log_path
+        if not os.path.exists(path):
+            os.makedirs(path)
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)  # 输出到不同平台的总开关
+
+        file = logging.FileHandler(path+'/log.txt', mode='a')  # 日志输出到文件的设置
+        file.setLevel(logging.DEBUG)
+
+        ch = logging.StreamHandler()  # 日志输出到控制台的设置
+        ch.setLevel(logging.WARNING)
+
+        formatter = logging.Formatter('%(message)s')  # 日志输出格式设置
+        file.setFormatter(formatter)
+        ch.setFormatter(formatter)
+
+        # 将不同控制模块添加到总控制台
+        logger.addHandler(file)
+        logger.addHandler(ch)

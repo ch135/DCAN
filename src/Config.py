@@ -14,6 +14,7 @@ parser.add_argument("--cpu", type=bool, default=False, help="use cpu only")
 parser.add_argument("--n_GPUs", type=int, default=2, help="the number of GPU")
 parser.add_argument("--id_GPUs", type=list, default=[0, 1], help="the index of GPUs")
 parser.add_argument("--seed", type=int, default=1, help="random seed")
+parser.add_argument('--log_path', type=str, default='./experiment/log', help='log path')
 
 # Data specification
 parser.add_argument("--train_dir", type=str, default="/root/simple_hao/dataset", help="thr dir of train data")
@@ -53,7 +54,6 @@ parser.add_argument("--save_models", type=bool, default=True, help="save trainin
 parser.add_argument("--increase_rate", type=int, default=16, help="thr increase rate of Densenet")
 parser.add_argument("--ssim_path", type=str, default="../experiment/train/ssim.txt", help="the path of the best ssim of training")
 parser.add_argument("--psnr_path", type=str, default="../experiment/train/psnr.txt", help="the path of the best psnr of training")
-parser.add_argument("--loss_path", type=str, default="../experiment/loss/history.txt", help="the path of the train history")
 parser.add_argument("--weight_decay", type=int, default=0.01, help="weight1 decay")
 
 # train_RCAN

@@ -3,7 +3,7 @@
 # @Author  : chenhao
 # @FileName: DCAN_change.py
 # @Software: PyCharm
-# @Desc: 改版 DCAN。输入图像不经过处理与特征矩阵相减
+# @Desc: 改版 DCAN。输入图像不经过处理与特征矩阵相减;激活函数改成 PReLU
 
 import torch.nn as nn
 from Config import args
@@ -15,7 +15,7 @@ import math
 class _Dense_Block(nn.Module):
     def __init__(self, channel_in):
         super(_Dense_Block, self).__init__()
-        self.relu = nn.ReLU()
+        self.relu = nn.PReLU()
         self.increase_rate = args.increase_rate
         self.conv1 = nn.Conv2d(in_channels=channel_in, out_channels=self.increase_rate, kernel_size=3, stride=1,
                                padding=1)
